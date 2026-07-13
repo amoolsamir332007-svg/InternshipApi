@@ -1,5 +1,4 @@
 ﻿
-using Azure;
 
 using InternshipApi.DTOs;
 using InternshipApi.Models;
