@@ -133,7 +133,7 @@ namespace InternshipApi.Controllers
             var opportunities = await _repo.GetAllOpportunity();
             return Ok(opportunities);
         }
-
+        
         // GET: api/student/opportunities/search?title=...
         [HttpGet("opportunities/search")]
         public async Task<IActionResult> SearchOpportunities([FromQuery] string title)
