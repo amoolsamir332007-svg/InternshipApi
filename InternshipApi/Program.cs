@@ -59,6 +59,21 @@ namespace InternshipApi
             builder.Services.AddScoped<TrainingOpportunityRepository>();
             builder.Services.AddScoped<ApplicationRepository>();
 
+            // ============ CORS ============
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowFrontend", policy =>
+                {
+                    policy.SetIsOriginAllowed(origin =>
+                            origin.StartsWith("http://localhost:") ||
+                            origin == "https://your-frontend.onrender.com" // غيّرها بالدومين الحقيقي بتاعك
+                          )
+                          .AllowAnyMethod()
+                          .AllowAnyHeader()
+                          .AllowCredentials();
+                });
+            });
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -78,10 +93,13 @@ namespace InternshipApi
             }
             else
             {
-                // نخلي Swagger شغال في Production كمان مؤقتاً عشان تقدر تختبر بسهولة
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            // ============ CORS middleware ============
+            // لازم يكون قبل UseAuthentication و UseAuthorization
+            app.UseCors("AllowFrontend");
 
             app.UseAuthentication();   // لازم قبل Authorization
             app.UseAuthorization();
