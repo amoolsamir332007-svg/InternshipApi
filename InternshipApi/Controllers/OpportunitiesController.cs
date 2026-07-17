@@ -26,11 +26,6 @@ namespace InternshipApi.Controllers
 
             var results = await _repository.SearchAsync(query);
 
-            if (!results.Any())
-            {
-                return Ok($"No opportunities found matching '{query}'.");
-            }
-
             return Ok(results);
         }
     }
