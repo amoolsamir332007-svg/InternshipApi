@@ -168,7 +168,7 @@ namespace InternshipApi.Controllers
                     OpportunityID = dto.OpportunityId,
                     Notes = dto.Notes,
                     Status = ApplicationStatus.Submitted,
-                    AppliedAt = DateTime.Now
+                    AppliedAt = DateTime.UtcNow
                 };
 
                 await _repo.AddApplication(application);
