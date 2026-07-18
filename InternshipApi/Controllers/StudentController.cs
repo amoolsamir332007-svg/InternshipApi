@@ -19,12 +19,14 @@ namespace InternshipApi.Controllers
         private readonly StudentsRepository _repo;
         private readonly IWebHostEnvironment _environment;
         private readonly ApplicationRepository _applicationsRepo;
+        private readonly TrainingOpportunityRepository _opprepo;
 
-        public StudentController(StudentsRepository repo, IWebHostEnvironment environment, ApplicationRepository applicationsRepo)
+        public StudentController(StudentsRepository repo, IWebHostEnvironment environment, ApplicationRepository applicationsRepo, TrainingOpportunityRepository opprepo)
         {
             _repo = repo;
             _environment = environment;
             _applicationsRepo = applicationsRepo;
+            _opprepo = opprepo;
         }
 
         // Helper: يجيب الـ UserID من التوكن
@@ -130,7 +132,28 @@ namespace InternshipApi.Controllers
         [HttpGet("opportunities")]
         public async Task<IActionResult> GetAllOpportunities()
         {
-            var opportunities = await _repo.GetAllOpportunity();
+            var opportunities = await _opprepo.GetAllQueryable()
+        .Select(o => new
+        {
+            o.OpportunityID,
+            o.Title,
+            o.Description,
+            o.Capacity,
+            o.StartDate,
+            o.EndDate,
+            o.Location,
+            o.Status,
+            o.CreatedAt,
+            Institution = new
+            {
+                o.Institution.InstituationID,
+                o.Institution.Name,
+                o.Institution.Address,
+                o.Institution.Email,
+                o.Institution.PhoneNumber
+            }
+        })
+        .ToListAsync();
             return Ok(opportunities);
         }
         
