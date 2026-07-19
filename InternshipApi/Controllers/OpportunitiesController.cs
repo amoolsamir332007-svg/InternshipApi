@@ -1,6 +1,7 @@
-﻿using InternshipApi.Models;
+using InternshipApi.Models;
 using InternshipApi.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace InternshipApi.Controllers
 {
@@ -17,12 +18,37 @@ namespace InternshipApi.Controllers
 
         // GET: api/opportunities/search?query=something
         [HttpGet("search")]
-        public async Task<ActionResult<IEnumerable<Opportunity>>> Search([FromQuery] string query)
+        public async Task<ActionResult<IEnumerable<object>>> Search([FromQuery] string query)
         {
-            var results = string.IsNullOrWhiteSpace(query)
-                ? await _repository.GetAllAsync()
-                : await _repository.SearchAsync(query);
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                var all = await _repository.GetAllQueryable()
+                    .Select(o => new
+                    {
+                        o.OpportunityID,
+                        o.Title,
+                        o.Description,
+                        o.Capacity,
+                        o.StartDate,
+                        o.EndDate,
+                        o.Location,
+                        o.Status,
+                        o.CreatedAt,
+                        Institution = new
+                        {
+                            o.Institution.InstituationID,
+                            o.Institution.Name,
+                            o.Institution.Address,
+                            o.Institution.Email,
+                            o.Institution.PhoneNumber
+                        }
+                    })
+                    .ToListAsync();
 
+                return Ok(all);
+            }
+
+            var results = await _repository.SearchAsync(query);
             return Ok(results);
         }
     }
