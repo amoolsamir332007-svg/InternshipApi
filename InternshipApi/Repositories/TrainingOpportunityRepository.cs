@@ -178,6 +178,12 @@ namespace InternshipApi.Repositories
                 .AsNoTracking()
                 .ToListAsync();
         }
+        public IQueryable<Opportunity> SearchAsQueryable(string query)
+        {
+            // لا نستخدم await هنا لأننا نبني استعلاماً فقط ولا ننفذه بعد
+            return _dbContext.Opportunities
+                .Where(x => EF.Functions.Like(x.Title, $"%{query}%"));
+        }
 
         #endregion
 

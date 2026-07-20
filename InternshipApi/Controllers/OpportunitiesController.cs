@@ -20,36 +20,34 @@ namespace InternshipApi.Controllers
         [HttpGet("search")]
         public async Task<ActionResult<IEnumerable<object>>> Search([FromQuery] string query)
         {
-            if (string.IsNullOrWhiteSpace(query))
-            {
-                var all = await _repository.GetAllQueryable()
-                    .Select(o => new
-                    {
-                        o.OpportunityID,
-                        o.Title,
-                        o.Description,
-                        o.Capacity,
-                        o.StartDate,
-                        o.EndDate,
-                        o.Location,
-                        o.Status,
-                        o.CreatedAt,
-                        Institution = new
-                        {
-                            o.Institution.InstituationID,
-                            o.Institution.Name,
-                            o.Institution.Address,
-                            o.Institution.Email,
-                            o.Institution.PhoneNumber
-                        }
-                    })
-                    .ToListAsync();
+            IQueryable<Opportunity> queryable = string.IsNullOrWhiteSpace(query)
+         ? _repository.GetAllQueryable()
+         : _repository.SearchAsQueryable(query);
+            var results = await queryable
+       .Select(o => new
+       {
+           o.OpportunityID,
+           o.Title,
+           o.Description,
+           o.Capacity,
+           o.StartDate,
+           o.EndDate,
+           o.Location,
+           o.Status,
+           o.CreatedAt,
+           Institution = new
+           {
+               o.Institution.InstituationID,
+               o.Institution.Name,
+               o.Institution.Address,
+               o.Institution.Email,
+               o.Institution.PhoneNumber
+           }
+       })
+        .ToListAsync();
 
-                return Ok(all);
-            }
-
-            var results = await _repository.SearchAsync(query);
             return Ok(results);
+
         }
     }
 }
