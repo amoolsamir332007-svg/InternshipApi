@@ -235,14 +235,22 @@ namespace InternshipApi.Controllers
             return Ok(application);
         }
         [HttpPatch("applications/{id}/withdraw")]
+       
         public async Task<IActionResult> WithdrawApplication(int id)
         {
-            var success = await _applicationsRepo.WithdrawAsync(id, GetStudentId());
+            var application = await _applicationsRepo.WithdrawAsync(id, GetStudentId());
 
-            if (!success)
+            if (application == null)
                 return NotFound("Application not found or doesn't belong to you");
 
-            return Ok(new { Message = "Application withdrawn" });
+            // رجّع بس البيانات المحتاجها الفرونت (تجنب الـ circular reference)
+            return Ok(new
+            {
+                application.ApplicationID,
+                application.Status,
+                application.OpportunityID,
+                Message = "Application withdrawn"
+            });
         }
     }
 }

@@ -124,18 +124,18 @@ namespace InternshipApi.Repositories
             return true;
         }
 
-        public async Task<bool> WithdrawAsync(int applicationId, int studentId)
+        public async Task<Application?> WithdrawAsync(int applicationId, int studentId)
         {
             var application = await _dbContext.Applications
                 .FirstOrDefaultAsync(a => a.ApplicationID == applicationId && a.StudentID == studentId);
 
             if (application == null)
-                return false;
+                return null;   // مفيش Application بالشروط دي
 
             application.Status = ApplicationStatus.Withdrawn;
             await _dbContext.SaveChangesAsync();
 
-            return true;
+            return application;   // ✅ رجّع الـ Object المحدّث نفسه
         }
 
         #endregion
