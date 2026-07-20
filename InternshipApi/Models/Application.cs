@@ -34,7 +34,7 @@ namespace InternshipApi.Models
             Approved,
           
 
-            Rejected,ار
+            Rejected,
           
             Withdrawn
         }
